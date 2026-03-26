@@ -1,0 +1,31 @@
+{
+	"schemaVersion": 1,
+	"id": "apex-renderer",
+	"version": "1.0.0",
+	"name": "Apex Renderer",
+	"description": "High-performance Vulkan-based rendering engine with Ghost-Glass UI.",
+	"authors": [
+		"ExodusCoder9"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/apex-renderer",
+		"sources": "https://github.com/ExodusCoder9/apex-renderer",
+		"issues": "https://github.com/ExodusCoder9/apex-renderer/issues"
+	},
+	"license": "MIT",
+	"icon": "icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"com.apex.renderer.ApexRenderer"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.15.0",
+		"minecraft": "1.21.1",
+		"java": ">=21"
+	},
+	"mixins": [
+		"apex-renderer.mixins.json"
+	]
+}

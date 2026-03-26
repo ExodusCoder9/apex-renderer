@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "com.apex.renderer.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"VulkanSlamMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

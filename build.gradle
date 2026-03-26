@@ -1,0 +1,84 @@
+plugins {
+	id 'fabric-loom' version '1.15-SNAPSHOT'
+	id 'maven-publish'
+}
+
+version = "1.0.0"
+group = "com.apex.renderer"
+
+base { archivesName = "apex-renderer" }
+
+java {
+	toolchain.languageVersion = JavaLanguageVersion.of(26)
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// CORE 1.21.11
+	minecraft "com.mojang:minecraft:1.21.11"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:0.18.4"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:0.141.3+1.21.11"
+
+	// THE EXTRACTED C2ME ENGINE & ITS HELPERS
+	modImplementation files('libs/c2me-base-mc1.21.11-0.3.6.0.0-all.jar')
+	modImplementation files('libs/c2me-fabric-mc1.21.11-0.3.6.0.0.jar')
+	implementation 'net.objecthunter:exp4j:0.4.8'
+	implementation 'com.electronwill.night-config:core:3.6.6'
+	implementation 'com.electronwill.night-config:toml:3.6.6'
+
+	// PERFORMANCE SQUAD (EntityCulling disabled for Vulkan synergy)
+	modImplementation files('libs/ferritecore-8.2.0-fabric.jar')
+	modImplementation files('libs/krypton-0.2.10.jar')
+	modImplementation files('libs/lithium-fabric-0.21.4+mc1.21.11.jar')
+	// modImplementation files('libs/entityculling-fabric-1.9.5-mc1.21.11.jar')
+	modImplementation files('libs/ScalableLux-0.1.6+fabric.c25518a-all.jar')
+
+	// NETWORKING & VULKAN ENGINE
+	implementation files('libs/velocity-native-3.3.0-20240916.013244-136.jar')
+	implementation files('libs/lwjgl-vulkan-3.3.3.jar')
+	implementation files('libs/lwjgl-vma.jar')
+	implementation files('libs/lwjgl-shaderc-3.3.3.jar')
+	runtimeOnly files('libs/lwjgl-vma-natives-windows.jar')
+
+	// ONLY IMPLEMENT VULKAN, DO NOT "INCLUDE" OR NEST IT
+	modImplementation files('libs/VulkanMod_1.21.11-0.6.1.jar')
+}
+
+loom {
+	runs {
+		client {
+			client()
+			vmArgs (
+					"--enable-preview",
+					"--add-modules", "jdk.incubator.vector",
+					"-Xms2G", "-Xmx4G",
+					"-XX:+UseG1GC",
+					"-XX:+UnlockExperimentalVMOptions",
+
+					// PERFORMANCE FLAGS
+					"-Dscalablelux.parallelLightUpdates=true",
+					"-Dc2me.useSIMD=true",
+					"-Dc2me.smoothChunkSending=true",
+					"-Dc2me.priorityIoThreads=true",
+
+					"-XX:MaxGCPauseMillis=10"
+			)
+		}
+	}
+}
+
+// COMPILER PERMISSION SLIP FOR SIMD MATH
+tasks.withType(JavaCompile).configureEach {
+	it.options.compilerArgs << "--add-modules" << "jdk.incubator.vector" << "--enable-preview"
+}
+
+// Editor sync for Java 26
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(26)
+	}
+}
